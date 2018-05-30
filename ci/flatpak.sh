@@ -3,10 +3,7 @@
 
 set -xeuo pipefail
 
-# Frozen to a tag for now to help predictability; it's
-# also useful to test building *older* versions since
-# that must work.
-FLATPAK_TAG=0.10.2.1
+FLATPAK_TAG=master
 
 dn=$(dirname $0)
 . ${dn}/libpaprci/libbuild.sh
@@ -23,6 +20,7 @@ pkg_install sudo which attr fuse \
             elfutils git gettext-devel libappstream-glib-devel \
             /usr/bin/{update-mime-database,update-desktop-database,gtk-update-icon-cache} \
             hicolor-icon-theme
+pkg_install_if_os fedora gjs parallel clang python2
 pkg_install flatpak && rpm -e flatpak
 
 # Build and install ostree
@@ -31,7 +29,6 @@ build
 make install
 tmpd=$(mktemp -d)
 cd ${tmpd}
-# Frozen to a tag for now on general principle
 git clone --recursive --depth=1 -b ${FLATPAK_TAG} https://github.com/flatpak/flatpak
 cd ${tmpd}/flatpak
 build
